@@ -1,4 +1,5 @@
 import math
+import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -15,10 +16,19 @@ class T_Tracker_data:
         self.positions = []
         self.seperate_data()
 
-    def get_v_0(self, value):
-        dt = self.t[1] - self.t[0]
+    def get_v_0(self, value: str):
         selected_list = getattr(self, value)
+        """
+        dt = self.t[1] - self.t[0]
         return (selected_list[1] - selected_list[0]) / dt
+        """
+
+        # using linear regression for the first 5 frames to estimate initial velocity more accurately
+        t_values = self.t[:5]
+        axis_values = selected_list[:5]
+        # axis_values = a*t_values +b
+        a, b = np.polyfit(t_values, axis_values, 1)
+        return a
 
     def seperate_data(self):
         for i, value in enumerate(data):
@@ -59,7 +69,8 @@ class T_math_model:
 
     # fmt: off
     def calc_air_resistance(self, velocity):
-        return (0.5 * self.air_density * velocity**2 * self.C_d * math.pi * self.r**2) * -1
+        #return (0.5 * self.air_density * velocity**2 * self.C_d * math.pi * self.r**2) * -1
+        return (-0.5*self.air_density*velocity*abs(velocity)*self.C_d*math.pi*self.r**2)
     # fmt: on
 
     def calculate_ball_movement(self):
@@ -73,7 +84,7 @@ class T_math_model:
             dt = 0.001
             # calculate accelleration in each seperate direction
             a_x = self.calc_air_resistance(self.v_x) / self.m
-            a_y = self.calc_air_resistance(self.v_y) + self.F_g / self.m
+            a_y = (self.calc_air_resistance(self.v_y) + self.F_g) / self.m
             self.current_time += dt
             self.v_x += a_x * dt
             self.v_y += a_y * dt
@@ -154,7 +165,6 @@ def generate_graphs():
 tracker_data = T_Tracker_data()
 test = T_math_model()
 generate_graphs()
-
 # ---- TO DO ----
 #   * beregne C_d og bytte ut med 0.47
 #   * har ikke bergnet noe for energi over tid
