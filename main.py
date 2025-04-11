@@ -3,10 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-data_values = open("tracker_data.txt", "r")
-data = data_values.read().split()
-
-
 # ------- Start T_Physics -------
 class T_Physics:
     def __init__(self):
@@ -66,6 +62,8 @@ class T_Ball:
 # ------- Start of T_Tracker_data -------
 class T_Tracker_data:
     def __init__(self):
+        self.data_values = open("tracker_data.txt", "r")
+        self.data = self.data_values.read().split()
         self.t = []
         self.x = []
         self.y = []
@@ -82,7 +80,7 @@ class T_Tracker_data:
         return a
 
     def seperate_data(self):
-        for i, value in enumerate(data):
+        for i, value in enumerate(self.data):
             value = float(value)
             sort_logic = i % 3
             match sort_logic:
