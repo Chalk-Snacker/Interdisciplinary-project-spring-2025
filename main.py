@@ -13,6 +13,9 @@ class T_Physics:
         self.g = 9.81
         self.air_density = 1.225
 
+    def calc_gravity(self, a_mass):
+        return self.g * a_mass * -1
+
     def calc_velocity(self, a_object, i):
         dt = a_object.t[i + 1] - a_object.t[i]
         dx = a_object.x[i + 1] - a_object.x[i]
@@ -100,7 +103,7 @@ class T_Math_model:
         self.x = []
         self.y = []
         self.t = []
-        self.F_g = physics.g * ball.mass * -1
+        self.F_g = physics.calc_gravity(a_object.mass)
         self.v_x = tracker_data.get_v_0("x")
         self.v_y = tracker_data.get_v_0("y")
         self.pos_x = tracker_data.x[0]
