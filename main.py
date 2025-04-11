@@ -184,6 +184,7 @@ def draw_graphs(a_model):
     plt.ylabel("Energy (J)")
     plt.title("Kinetic energy")
     plt.grid()
+
     plt.subplot(1, 2, 2)
     plt.plot(a_model.t[:-1], physics.E_p)
     plt.xlabel("Time (s)")
