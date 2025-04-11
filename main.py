@@ -33,40 +33,16 @@ class T_Physics:
         )
 
     def calc_energy(self, a_object):
-        E_k = []
-        E_p = []
-        E_total = []
+        self.E_k = []
+        self.E_p = []
+        self.E_total = []
         for i in range(len(a_object.t) - 1):
             v = self.calc_velocity(a_object, i)
-            E_k.append(0.5 * ball.mass * v**2)
-            E_p.append(ball.mass * self.g * a_object.y[i])
+            self.E_k.append(0.5 * ball.mass * v**2)
+            self.E_p.append(ball.mass * self.g * a_object.y[i])
             # calculate mechanical energy of last energy appended
-            E_m = E_k[-1] + E_p[-1]
-            E_total.append(E_m)
-        plt.figure()
-        plt.subplot(1, 2, 1)
-        plt.plot(a_object.t[:-1], E_k)
-        plt.xlabel("Time (s)")
-        plt.ylabel("Energy (J)")
-        plt.title("Kinetic energy")
-        plt.grid()
-        plt.subplot(1, 2, 2)
-        plt.plot(a_object.t[:-1], E_p)
-        plt.xlabel("Time (s)")
-        plt.ylabel("Energy (J)")
-        plt.title("Potential energy")
-        plt.grid()
-        plt.tight_layout()
-
-        plt.figure()
-        plt.plot(a_object.t[:-1], E_total, marker="o", label="Math model of ball")
-        plt.title("Mechanical energy")
-        plt.xlabel("Time (s)")
-        plt.ylabel("Energy (J)")
-        plt.grid()
-        plt.axis("equal")
-        plt.legend()
-        # plt.show()
+            self.E_m = self.E_k[-1] + self.E_p[-1]
+            self.E_total.append(self.E_m)
 
 
 # ------- End of T_Physics -------
@@ -189,13 +165,39 @@ def draw_graphs(a_model):
     plt.grid()
     plt.tight_layout()
 
-    # --- Figure 5: Projectile Trajectory – Tracker vs model ---
+    # --- Figure 3: Projectile Trajectory – Tracker vs model ---
     plt.figure()
     plt.plot(tracker_data.x, tracker_data.y, marker="o", label="Tracker")
     plt.plot(a_model.x, a_model.y, marker="x", label="Model")
     plt.title("Projectile Trajectory - Tracker vs model")
     plt.xlabel("Horizontal position (m)")
     plt.ylabel("Vertical position (m)")
+    plt.grid()
+    plt.axis("equal")
+    plt.legend()
+
+    # --- Figure 4: Energy - Kinetic vs potential ---
+    plt.figure()
+    plt.subplot(1, 2, 1)
+    plt.plot(a_model.t[:-1], physics.E_k)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Energy (J)")
+    plt.title("Kinetic energy")
+    plt.grid()
+    plt.subplot(1, 2, 2)
+    plt.plot(a_model.t[:-1], physics.E_p)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Energy (J)")
+    plt.title("Potential energy")
+    plt.grid()
+    plt.tight_layout()
+
+    # --- Figure 5: Mechanical energy
+    plt.figure()
+    plt.plot(a_model.t[:-1], physics.E_total, marker="o", label="Math model of ball")
+    plt.title("Mechanical energy")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Energy (J)")
     plt.grid()
     plt.axis("equal")
     plt.legend()
