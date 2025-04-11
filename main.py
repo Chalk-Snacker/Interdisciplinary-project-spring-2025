@@ -64,6 +64,7 @@ class T_Tracker_data:
     def __init__(self):
         self.data_values = open("tracker_data.txt", "r")
         self.data = self.data_values.read().split()
+        self.data_values.close()
         self.t = []
         self.x = []
         self.y = []
@@ -181,14 +182,14 @@ def draw_graphs(a_model):
     # --- Figure 4: Energy - Kinetic vs potential ---
     plt.figure()
     plt.subplot(1, 2, 1)
-    plt.plot(a_model.t[:-1], physics.E_k)
+    plt.plot(a_model.t[0 : len(physics.E_k)], physics.E_k)
     plt.xlabel("Time (s)")
     plt.ylabel("Energy (J)")
     plt.title("Kinetic energy")
     plt.grid()
 
     plt.subplot(1, 2, 2)
-    plt.plot(a_model.t[:-1], physics.E_p)
+    plt.plot(a_model.t[0 : len(physics.E_p)], physics.E_p)
     plt.xlabel("Time (s)")
     plt.ylabel("Energy (J)")
     plt.title("Potential energy")
@@ -197,7 +198,12 @@ def draw_graphs(a_model):
 
     # --- Figure 5: Mechanical energy
     plt.figure()
-    plt.plot(a_model.t[:-1], physics.E_total, marker="o", label="Math model of ball")
+    plt.plot(
+        a_model.t[0 : len(physics.E_total)],
+        physics.E_total,
+        marker="o",
+        label="Math model of ball",
+    )
     plt.title("Mechanical energy")
     plt.xlabel("Time (s)")
     plt.ylabel("Energy (J)")
