@@ -108,6 +108,7 @@ class T_Math_model:
         self.pos_y = tracker_data.y[0]
         self.current_time = 0
         self.calculate_ball_movement(a_object)
+        physics.calc_energy(self)
 
     def calculate_ball_movement(self, a_object):
         # loops untill ball hits "ground"
@@ -211,5 +212,4 @@ physics = T_Physics()
 ball = T_Ball()
 tracker_data = T_Tracker_data()
 ball_model = T_Math_model(ball)
-physics.calc_energy(ball_model)
 draw_graphs(ball_model)
