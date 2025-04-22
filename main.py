@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 class T_Physics:
     def __init__(self):
         self.g = 9.81
-        self.air_density = 1.225
+        self.air_density = 1.2
 
     def calc_gravity(self, a_mass):
         return self.g * a_mass * -1
@@ -53,7 +53,7 @@ class T_Ball:
         self.radius = 0.0275
         self.mass = 0.06979
         self.surface_area = math.pi * self.radius**2
-        self.C_d = 3.5
+        self.C_d = 4.3
 
 
 # ------- End of T_Ball -------
@@ -68,7 +68,6 @@ class T_Tracker_data:
         self.t = []
         self.x = []
         self.y = []
-        self.positions = []
         self.seperate_data()
 
     def get_v_0(self, value: str):
