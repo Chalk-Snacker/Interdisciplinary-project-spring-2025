@@ -107,26 +107,35 @@ class T_Math_model:
         self.pos_x = tracker_data.x[0]
         self.pos_y = tracker_data.y[0]
         self.current_time = 0
-        self.calculate_ball_movement(a_object)
+        self.calculate_ball_movement(a_object, False)
         physics.calc_energy(self)
 
-    def calculate_ball_movement(self, a_object):
+    def calculate_ball_movement(self, a_object, air_resistance):
+        # pushing all start values
+        self.x.append(self.pos_x)
+        self.y.append(self.pos_y)
+        self.t.append(self.current_time)
+        # chose small number for delta for more accurate values, 1000 positions pr second (1000 frames)
+        dt = 0.001
         # loops untill ball hits "ground"
         while self.pos_y >= 0:
-            # pushing all start values
-            self.x.append(self.pos_x)
-            self.y.append(self.pos_y)
-            self.t.append(self.current_time)
-            # chose small number for delta for more accurate values, 1000 positions pr second (1000 frames)
-            dt = 0.001
-            # calculate accelleration in each seperate direction
-            a_x = physics.calc_air_resistance(self.v_x) / a_object.mass
-            a_y = (physics.calc_air_resistance(self.v_y) + self.F_g) / a_object.mass
             self.current_time += dt
+            if air_resistance:
+                # calculate accelleration in each seperate direction
+                a_x = physics.calc_air_resistance(self.v_x) / a_object.mass
+                a_y = (physics.calc_air_resistance(self.v_y) + self.F_g) / a_object.mass
+            else:
+                a_x = 0
+                a_y = physics.g * -1
+
             self.v_x += a_x * dt
             self.v_y += a_y * dt
             self.pos_x += self.v_x * dt
             self.pos_y += self.v_y * dt
+
+            self.x.append(self.pos_x)
+            self.y.append(self.pos_y)
+            self.t.append(self.current_time)
 
 
 # ------- End of T_math_model -------
