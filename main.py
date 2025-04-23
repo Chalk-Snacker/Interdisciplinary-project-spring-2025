@@ -97,20 +97,23 @@ class T_Tracker_data:
 
 # ------- Start of T_math_model -------
 class T_Math_model:
-    def __init__(self, a_object):
+    def __init__(self, a_object, air_resistance):
         self.x = []
         self.y = []
         self.t = []
         self.F_g = physics.calc_gravity(a_object.mass)
         self.v_x = tracker_data.get_v_0("x")
         self.v_y = tracker_data.get_v_0("y")
-        self.pos_x = tracker_data.x[0]
-        self.pos_y = tracker_data.y[0]
         self.current_time = 0
-        self.calculate_ball_movement(a_object, False)
-        physics.calc_energy(self)
+        self.calculate_ball_movement(a_object, air_resistance)
+        """
+        if air_resistance:
+            physics.calc_energy(self)
+        """
 
     def calculate_ball_movement(self, a_object, air_resistance):
+        self.pos_x = tracker_data.x[0]
+        self.pos_y = tracker_data.y[0]
         # pushing all start values
         self.x.append(self.pos_x)
         self.y.append(self.pos_y)
@@ -125,6 +128,7 @@ class T_Math_model:
                 a_x = physics.calc_air_resistance(self.v_x) / a_object.mass
                 a_y = (physics.calc_air_resistance(self.v_y) + self.F_g) / a_object.mass
             else:
+                print("heisann")
                 a_x = 0
                 a_y = physics.g * -1
 
@@ -141,76 +145,75 @@ class T_Math_model:
 # ------- End of T_math_model -------
 
 
-def draw_graphs(a_model):
-    # --- Figure 1: Data -> Tracker ---
+def draw_graphs(model_with_Fd, model_without_Fd):
+    # --- Figure 1: Projectile Trajectory – Tracker vs model ---
     plt.figure()
-    plt.subplot(1, 2, 1)
-    plt.plot(tracker_data.t, tracker_data.y, label="Tracker")
-    plt.xlabel("Time (s)")
-    plt.ylabel("Vertical position (m)")
-    plt.title("Vertical position as a function of time")
-    plt.grid()
-
-    plt.subplot(1, 2, 2)
-    plt.plot(tracker_data.t, tracker_data.x)
-    plt.xlabel("Time (s)")
-    plt.ylabel("Horizontal position (m)")
-    plt.title("Horizontal position as a function of time")
-    plt.grid()
-    plt.tight_layout()
-
-    # --- Figure 2: Data -> Math model ---
-    plt.figure()
-    plt.subplot(1, 2, 1)
-    plt.plot(a_model.t, a_model.y, label="Math model")
-    plt.xlabel("Time (s)")
-    plt.ylabel("Vertical position (m)")
-    plt.title("Vertical position as a function of time")
-    plt.grid()
-
-    plt.subplot(1, 2, 2)
-    plt.plot(a_model.t, a_model.x, label="Math model")
-    plt.xlabel("Time (s)")
-    plt.ylabel("Horizontal position (m)")
-    plt.title("Horizontal position as a function of time")
-    plt.grid()
-    plt.tight_layout()
-
-    # --- Figure 3: Projectile Trajectory – Tracker vs model ---
-    plt.figure()
-    plt.plot(tracker_data.x, tracker_data.y, marker="o", label="Tracker")
-    plt.plot(a_model.x, a_model.y, marker="x", label="Model")
-    plt.title("Projectile Trajectory - Tracker vs model")
+    plt.plot(tracker_data.x, tracker_data.y, marker="o", label="Measurements")
+    plt.plot(model_with_Fd.x, model_with_Fd.y, marker=",", label="Model")
+    plt.plot(
+        model_without_Fd.x, model_without_Fd.y, marker=",", label="Model without Fd"
+    )
+    plt.title("Projectile Trajectory - Measurements vs model")
     plt.xlabel("Horizontal position (m)")
     plt.ylabel("Vertical position (m)")
     plt.grid()
     plt.axis("equal")
     plt.legend()
 
-    # --- Figure 4: Energy - Kinetic vs potential ---
+    # --- Figure 2: Kinetic energy - with Fd  vs wihtout Fd ---
     plt.figure()
-    plt.subplot(1, 2, 1)
-    plt.plot(a_model.t[0 : len(physics.E_k)], physics.E_k)
+    physics.calc_energy(model_with_Fd)
+    plt.plot(
+        model_with_Fd.t[0 : len(physics.E_k)],
+        physics.E_k,
+        marker=",",
+        label="Model",
+    )
+
+    physics.calc_energy(model_without_Fd)
+    plt.plot(
+        model_without_Fd.t[0 : len(physics.E_k)],
+        physics.E_k,
+        marker=",",
+        label="Model without Fd",
+    )
     plt.xlabel("Time (s)")
     plt.ylabel("Energy (J)")
     plt.title("Kinetic energy")
     plt.grid()
+    plt.axis("equal")
+    plt.legend()
 
-    plt.subplot(1, 2, 2)
-    plt.plot(a_model.t[0 : len(physics.E_p)], physics.E_p)
+    # --- Figure 3: Potential energy - with Fd vs without Fd ---
+    plt.figure()
+    physics.calc_energy(model_with_Fd)
+    plt.plot(
+        model_with_Fd.t[0 : len(physics.E_p)],
+        physics.E_p,
+        marker=",",
+        label="Model",
+    )
+    physics.calc_energy(model_without_Fd)
+    plt.plot(
+        model_without_Fd.t[0 : len(physics.E_p)],
+        physics.E_p,
+        marker=",",
+        label="Model without Fd",
+    )
     plt.xlabel("Time (s)")
     plt.ylabel("Energy (J)")
     plt.title("Potential energy")
     plt.grid()
-    plt.tight_layout()
-
-    # --- Figure 5: Mechanical energy
+    plt.axis("equal")
+    plt.legend()
+    # --- Figure 3: Mechanical energy
     plt.figure()
+    physics.calc_energy(model_with_Fd)
     plt.plot(
-        a_model.t[0 : len(physics.E_total)],
+        model_with_Fd.t[0 : len(physics.E_total)],
         physics.E_total,
-        marker="o",
-        label="Math model of ball",
+        marker=",",
+        label="Model",
     )
     plt.title("Mechanical energy")
     plt.xlabel("Time (s)")
@@ -218,12 +221,12 @@ def draw_graphs(a_model):
     plt.grid()
     plt.axis("equal")
     plt.legend()
-
     plt.show()
 
 
 physics = T_Physics()
 ball = T_Ball()
 tracker_data = T_Tracker_data()
-ball_model = T_Math_model(ball)
-draw_graphs(ball_model)
+ball_model = T_Math_model(ball, True)
+ball_model_no_Fd = T_Math_model(ball, False)
+draw_graphs(ball_model, ball_model_no_Fd)
